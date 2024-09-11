@@ -38,36 +38,61 @@ export const addAdmin =async (req, res, next) =>{
 };
 
 
-export const adminLogin = async (req, res, next) =>{
-    const { email, password } =  req.body;
-    if( !email && email.trim()===""  &&  !password && password.trim()==="" )
-    {
-        return res.status(422).json({message: "Please fill in all fields"})
+export const adminLogin = async (req, res, next) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(422).json({ message: "Please fill in all fields" });
     }
-
-    let existingAdmin;
-    try{
-            existingAdmin = await Admin.findOne({email});
+  
+    try {
+      const existingAdmin = await Admin.findOne({ email });
+      if (!existingAdmin) {
+        return res.status(400).json({ message: "Admin not found" });
+      }
+  
+      const isPasswordCorrect = bcrypt.compareSync(password, existingAdmin.password);
+      if (!isPasswordCorrect) {
+        return res.status(400).json({ message: "Incorrect password" });
+      }
+  
+      const token = jwt.sign({ id: existingAdmin._id }, 'MYSECRETKEY', { expiresIn: "7d" });
+      return res.status(200).json({ message: "Authentication completed", token, id: existingAdmin._id });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: "Server error" });
     }
-    catch(err){
-        return console.log(err);
-    }
+  };
+  
+// export const adminLogin = async (req, res, next) =>{
+//     const { email, password } =  req.body;
+//     if( !email && email.trim()===""  &&  !password && password.trim()==="" )
+//     {
+//         return res.status(422).json({message: "Please fill in all fields"})
+//     }
 
-    if(!existingAdmin){
-        return res.status(400).json({message:"admin not found"})
-    }
+//     let existingAdmin;
+//     try{
+//             existingAdmin = await Admin.findOne({email});
+//     }
+//     catch(err){
+//         return console.log(err);
+//     }
 
-    const isPasswordCorrect = bcrypt.compareSync(password, existingAdmin.password);
+//     if(!existingAdmin){
+//         return res.status(400).json({message:"admin not found"})
+//     }
 
-    if(!isPasswordCorrect){
-        return res.status(400).json({message: "Incorrect password"})
-    }
+//     const isPasswordCorrect = bcrypt.compareSync(password, existingAdmin.password);
 
-    const token = jwt.sign({ id: existingAdmin._id }, 'MYSECRETKEY', {expiresIn: "7d", }); //json webtoken to admin auth //till this day the token for the admin will be valid, and will not be able to create movies
+//     if(!isPasswordCorrect){
+//         return res.status(400).json({message: "Incorrect password"})
+//     }
 
-    return res.status(200).json({message: "Authentication completed", token, id:existingAdmin._id })
+//     const token = jwt.sign({ id: existingAdmin._id }, 'MYSECRETKEY', {expiresIn: "7d", }); //json webtoken to admin auth //till this day the token for the admin will be valid, and will not be able to create movies
 
-}
+//     return res.status(200).json({message: "Authentication completed", token, id:existingAdmin._id })
+
+// }
 
 
 export const getAdmins = async (req, res, next) =>{

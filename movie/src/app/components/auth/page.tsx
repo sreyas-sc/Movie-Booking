@@ -8,7 +8,7 @@ import { userActions } from '@/app/store';
 const Auth = () => {
   const dispatch =  useDispatch();
   const onResponseRecieved = (data: any) =>{
-    console.log("user data is"); //comment this after use
+    // console.log("user data is"); //comment this after use
     if (data && data.userId) {
       dispatch(userActions.login());
       localStorage.setItem("userId", data.userId);
@@ -17,10 +17,7 @@ const Auth = () => {
     }
   }
   const getData = (data: any) => {
-    // console.log("Auth", data); // Log the form data
     sendUserAuthRequest(data, data.signup) // Pass data directly, not data.inputs
-      // .then((res) => console.log(res))
-      // .then(()=>dispatch(userActions.login()))
       .then(onResponseRecieved)
       .catch((err) => console.log(err));
   };

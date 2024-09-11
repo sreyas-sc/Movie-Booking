@@ -54,26 +54,35 @@ export const getAllMovies = async () => {
 
   export const sendAdminAuthRequest = async (data) => {
     console.log("Received Auth Data: ", data);  // to check if the data is being passed properly
-    if (!data?.email) {
-      throw new Error("Email is undefined");
+    
+    if (!data?.email || !data?.password) {
+      throw new Error("Email or Password is undefined");
     }
 
     try {
+      // console.log("email is")
+      console.log("Attempting to login with email: ", data.email, data.password);
+
       const res = await axios.post("http://localhost:5000/admin/login", {
         email: data.email,
         password: data.password,
       });
+
+      console.log("API Response: ", res.data); // Log API response
+
   
-      if (res.status !== 200) {
+      if (res.status !== 200 && res.status !== 201 ) {
         console.log("Unexpected error occurred!", res.status);
         return null;
       }
-  
-      const resData = await res.data;
-      return resData;
+      
+      return res.data;
+      // const resData = await res.data;
+      // return resData;
     } catch (err) {
       console.log("Error occurred:", err);
-      return null;
+      return null; // Return null on error
+      // return null;
     }
   };
   
