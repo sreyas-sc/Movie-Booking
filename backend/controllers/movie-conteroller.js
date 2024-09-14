@@ -39,7 +39,7 @@ export const addMovie = async (req, res, next) =>{
     // create new movie
     let movie;
     try{
-        movie = new Movie({ 
+        movie = new Movie({
              title,
              description,
              releaseDate : new Date( `${releaseDate}` ),
@@ -88,19 +88,21 @@ export const getAllMovies = async (req, res, next ) =>{
     }
     return res.status(200).json({ movies })
 }
+  
 
 // 
-export const getMovieById = async (req, res, next ) =>{
-    const id= req.params.id;
+
+
+export const getMovieById = async (req, res, next) => {
+    const id = req.params.id;
     let movie;
-    try{
+    try {
         movie = await Movie.findById(id);
+    } catch (err) {
+        return res.status(500).json({ message: "Failed to retrieve movie" });
     }
-    catch(err){
-        return console.log(err)
+    if (!movie) {
+        return res.status(404).json({ message: "Movie not found" });
     }
-    if(!movie){
-        return res.status(404).json({ message: "Movie not found, invalid movie id" });
-    }
-    return res.status(200).json({ movie })
+    return res.status(200).json({ movie });
 }

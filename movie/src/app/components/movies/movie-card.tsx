@@ -1,5 +1,7 @@
 import { Card, CardActions, CardContent, CardMedia, Typography, Button } from '@mui/material';
 import React from 'react';
+import Link from 'next/link';
+
 
 interface MovieCardProps {
   title: string;
@@ -11,6 +13,8 @@ interface MovieCardProps {
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ title, description, releaseDate, posterUrl, duration, id }) => {
+  console.log('MovieCard ID:', id);
+  // console.log
   return (
     <Card 
       sx={{ 
@@ -46,6 +50,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, description, releaseDate, 
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: 'center', paddingBottom: 2 }}>
+        <Link href={`/booking/${id}`} legacyBehavior passHref>
         <Button
           sx={{
             size: "small",
@@ -60,6 +65,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, description, releaseDate, 
         >
           Book Tickets
         </Button>
+        </Link>
       </CardActions>
     </Card>
   );

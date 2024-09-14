@@ -42,6 +42,31 @@ export default function Homepage() {
   const [latestReleases, setLatestReleases] = useState<LatestReleaseMovie[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]); // Explicitly set the type here
 
+
+
+    // carousel starts here
+    const images = [
+      "https://assets-in.bmscdn.com/iedb/movies/images/mobile/listing/xxlarge/deadpool-and-wolverine-et00341295-1718018322.jpg",
+      "https://media.themoviedb.org/t/p/w1000_and_h563_face/stKGOm8UyhuLPR9sZLjs5AkmncA.jpg",
+      "https://media.themoviedb.org/t/p/w1066_and_h600_bestv2/2RVcJbWFmICRDsVxRI8F5xRmRsK.jpg",
+    ];
+
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    const handleNext = () => {
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      );
+    };
+  
+    const handlePrev = () => {
+      setCurrentImageIndex((prevIndex) =>
+        prevIndex === 0 ? images.length - 1 : prevIndex - 1
+      );
+    };
+
+    // Carousel ends here
+
   useEffect(() => {
     getAllMovies()
       .then((data) => setMovies(data.movies)) // Ensure that data.movies matches the Movie interface
@@ -64,16 +89,88 @@ export default function Homepage() {
       });
   }, []);
 
+  
+
   return (
     <Box width={'100%'} height={'100%'} margin="auto" marginTop={2}>
-      <Box margin="auto" width={'90%'} height={'20%'} padding={0}>
+      <Box
+      width={"100%"}
+      height={"100%"}
+      margin="auto"
+      marginTop={2}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
+      {/* Image Display */}
+      <Box margin="auto" width={"90%"} height={"400px"} position="relative">
         <img
-          src='https://assets-in.bmscdn.com/iedb/movies/images/mobile/listing/xxlarge/deadpool-and-wolverine-et00341295-1718018322.jpg'
-          alt='Unable to load image'
-          width={'100%'}
-          height={'40%'}
+          src={images[currentImageIndex]}
+          alt="Carousel Image"
+          width={"100%"}
+          height={"100%"}
+          style={{ objectFit: "cover", borderRadius: "8px" , transform: "scale(1.1)",
+            transition: "transform 0.3s ease-in-out"}}
         />
+
+        {/* Left & Right Buttons */}
+        <Button
+          onClick={handlePrev}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "10px",
+            transform: "translateY(-50%)",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            color: "white",
+            minWidth: "40px",
+            minHeight: "40px",
+            borderRadius: "50%",
+          }}
+        >
+          {"<"}
+        </Button>
+
+        <Button
+          onClick={handleNext}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: "10px",
+            transform: "translateY(-50%)",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            color: "white",
+            minWidth: "40px",
+            minHeight: "40px",
+            borderRadius: "50%",
+          }}
+        >
+          {">"}
+        </Button>
       </Box>
+
+      {/* Round Indicator Buttons */}
+      <Box display="flex" justifyContent="center">
+        {images.map((_, index) => (
+          <Button
+            key={index}
+            onClick={() => setCurrentImageIndex(index)}
+            sx={{
+              width: "12px",
+              height: "12px",
+              backgroundColor:
+                currentImageIndex === index ? "black" : "gray",
+              margin: "0 5px",
+              borderRadius: "50%",
+              minWidth: "12px",
+              padding: 0,
+            }}
+          />
+        ))}
+      </Box>
+    </Box>
+
+      {/* /////////////// */}
 
       <Box padding={5} margin='auto'>
         <Typography variant='h4' textAlign={"center"}>

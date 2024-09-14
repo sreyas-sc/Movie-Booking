@@ -7,39 +7,43 @@ import { getAllMovies } from '@/app/api-helpers/api-helpers.js';
 const MoviePage = () => {
   // Define the Movie interface
   interface Movie {
-    id: number;
+    _id: number; // Use string to match MongoDB ObjectId type
     title: string;
     posterUrl: string;
     releaseDate: string;
   }
+  
 
   // Initialize the state with an empty array of movies
   const [movies, setMovies] = useState<Movie[]>([]);
 
   useEffect(() => {
     getAllMovies()
-      .then((data) => setMovies(data.movies)) // Ensure this response returns 'movies'
-      .catch((err) => console.log(err));
+      .then((data) => {
+        console.log("API Response:", data); // Log the entire response
+        if (data && data.movies) {
+          setMovies(data.movies); // Safely check if 'movies' exists
+        } else {
+          console.error("Movies property is missing in the response");
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching movies:", err);
+      });
   }, []);
+  
+  
 
   return (
     <Box margin={"auto"} marginTop={4} display='flex' gap={3} padding={5}>
-      {/* <Typography 
-        variant='h4' 
-        padding={2} 
-        width="100%" 
-        bgcolor={"#900C3F"} 
-        color={"#FFFFFF"}
-        textAlign="center">
-          Movies
-      </Typography> */}
-
+      
       {/* The movie cards section */}
+      
       <Box width={'100%'} margin="auto" display={'flex'} justifyContent="center" gap={3} padding={5} flexWrap='wrap'>
         {movies.map((movie: Movie) => (
           <MovieCard
-            key={movie.id}
-            id={movie.id}
+            key={movie._id}
+            id={movie._id}
             title={movie.title}
             posterUrl={movie.posterUrl}
             releaseDate={movie.releaseDate}

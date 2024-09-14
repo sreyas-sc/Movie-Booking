@@ -14,6 +14,7 @@ const userSlice = createSlice({
       // state.userId = action.payload.userId; // Save userId in state
     },
     logout(state) {
+      localStorage.removeItem("userId")    //to remove the user id from the local storage
       state.isLoggedIN = false;
     },
   },
@@ -29,6 +30,8 @@ const adminSlice = createSlice({
     },
     logout(state) {
       state.isLoggedIN = false;
+      localStorage.removeItem("adminId");   //to remove the admin id from the local storage
+      localStorage.removeItem("token");     //to remove the token from the local storage
     },
   },
 });
