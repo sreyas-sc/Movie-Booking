@@ -1,20 +1,39 @@
 import { AutoFixOff } from '@mui/icons-material';
 import axios from 'axios'
-export const getAllMovies = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/movie");
+// export const getAllMovies = async () => {
+//     try {
+//       const res = await axios.get("http://localhost:5000/movie");
   
-      if (res.status !== 200) {
-        console.log("No Data");
-        return;
-      }
+//       if (res.status !== 200) {
+//         console.log("No Data");
+//         return;
+//       }
   
-      const data = await res.data;
-      return data;
-    } catch (err) {
-      console.log("Error: ", err.message);
+//       const data = await res.data;
+//       return data;
+//     } catch (err) {
+//       console.log("Error: ", err.message);
+//     }
+//   };
+
+
+export const getAllMovies = async (filters = {}) => {
+  try {
+    const params = new URLSearchParams(filters);
+    const res = await axios.get(`http://localhost:5000/movie?${params}`);
+
+    if (res.status !== 200) {
+      console.log("No Data");
+      return;
     }
-  };
+
+    const data = await res.data;
+    return data;
+  } catch (err) {
+    console.log("Error: ", err.message);
+  }
+};
+
 
   export const sendUserAuthRequest = async (data, signup) => {
     try {

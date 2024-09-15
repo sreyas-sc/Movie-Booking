@@ -9,7 +9,7 @@ interface MovieCardProps {
   releaseDate: string;
   posterUrl: string;
   duration: string;
-  id: number;
+  id: String;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ title, description, releaseDate, posterUrl, duration, id }) => {
