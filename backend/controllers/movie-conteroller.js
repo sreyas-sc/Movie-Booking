@@ -93,16 +93,36 @@ export const getAllMovies = async (req, res, next ) =>{
 // 
 
 
-export const getMovieById = async (req, res, next) => {
-    const id = req.params.id;
-    let movie;
+// export const getMovieById = async (req, res, next) => {
+//     const id = req.params.id;
+//     let movie;
+//     try {
+//         movie = await Movie.findById(id);
+//     } catch (err) {
+//         return res.status(500).json({ message: "Failed to retrieve movie" });
+//     }
+//     if (!movie) {
+//         return res.status(404).json({ message: "Movie not found" });
+//     }
+//     return res.status(200).json({ movie });
+// }
+
+
+export const getMovieById = async (req, res) => {
+    const movieId = req.params.id;
+    console.log(`Fetching movie with ID: ${movieId}`); // Log the ID
+  
     try {
-        movie = await Movie.findById(id);
-    } catch (err) {
-        return res.status(500).json({ message: "Failed to retrieve movie" });
+      const movie = await Movie.findById(movieId); // Replace with your actual method to fetch movie
+      if (!movie) {
+        console.error('Movie not found');
+        return res.status(404).json({ message: 'Movie not found' });
+      }
+      console.log('Movie found:', movie); // Log the movie details
+      return res.status(200).json({ movie });
+    } catch (error) {
+      console.error('Error fetching movie:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-    if (!movie) {
-        return res.status(404).json({ message: "Movie not found" });
-    }
-    return res.status(200).json({ movie });
-}
+  };
+  

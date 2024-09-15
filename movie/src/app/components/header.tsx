@@ -82,7 +82,7 @@ const Header: React.FC = () => {
 
             {/* if user is logged in, show profile and logout */}
             {isUserLoggedIn && [   
-              <Link key="profile" href="/user" legacyBehavior passHref>
+              <Link key="profile" href="/components/user-profile" legacyBehavior passHref>
                 <Tab label="Profile" component="a" sx={{ fontWeight: 'bold' }} />
               </Link>,
               <Link key="userLogout" href="/" legacyBehavior passHref>
@@ -92,7 +92,7 @@ const Header: React.FC = () => {
 
             {/* if admin is logged in, show add movie and profile */}
             {isAdminLoggedIn && [
-              <Link key="addMovie" href="/add" legacyBehavior passHref>
+              <Link key="addMovie" href="/components/add-movie" legacyBehavior passHref>
                 <Tab label="Add Movie" component="a" sx={{ fontWeight: 'bold' }} />
               </Link>,
               <Link key="adminProfile" href="/admin" legacyBehavior passHref>

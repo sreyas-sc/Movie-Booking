@@ -31,7 +31,7 @@ interface UpcomingMovieResponse {
 }
 
 interface Movie {
-  id: number;
+  _id: number;
   title: string;
   posterUrl: string;
   releaseDate: string;
@@ -187,8 +187,8 @@ export default function Homepage() {
         
         {movies && movies.slice(0,4).map((movie) => (
           <MovieCard
-            key={movie.id}
-            id={movie.id}
+            key={movie._id}
+            id={movie._id}
             title={movie.title}
             posterUrl={movie.posterUrl}
             releaseDate={movie.releaseDate}

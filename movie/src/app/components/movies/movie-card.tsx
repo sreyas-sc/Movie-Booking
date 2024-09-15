@@ -43,7 +43,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, description, releaseDate, 
           {description}
         </Typography>
         <Typography variant='body2' color='text.secondary'>
-          Release Date: {releaseDate}
+          Release Date:  { new Date (releaseDate).toLocaleDateString() }
         </Typography>
         <Typography variant='body2' color='text.secondary'>
           Duration: {duration}

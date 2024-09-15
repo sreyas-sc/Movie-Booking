@@ -1,3 +1,4 @@
+import { AutoFixOff } from '@mui/icons-material';
 import axios from 'axios'
 export const getAllMovies = async () => {
     try {
@@ -86,4 +87,100 @@ export const getAllMovies = async () => {
     }
   };
   
+
+
+  export const getMovieDetails = async (id) => {
+    console.log(`Fetching movie details for ID: ${id}`);
+    try {
+      const response = await axios.get(`http://localhost:5000/movie/${id}`);
+      console.log('Movie details response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching movie details:', error);
+      throw error;
+    }
+  };
+
+
+  // export const getUserBooking = async () =>{
+  //   const id = localStorage.getItem("userId");
+  //   const res = await axios.get(`http://localhost:5000/user/bookings/${id}`)
+  //   .catch(err=>console.log(err));
+
+  //   if(res.status !== 200){
+  //     return console.log("Unexpected error");
+  //   }
+
+  //   const resdata= await res.data;
+  //   return resdata;
+  // }
+  export const getUserBooking = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/user/bookings/${id}', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch bookings:", error);
+    }
+  };
   
+
+
+  //delete the hostory
+  export const deleteBooking = async(id) =>{
+    const res = await axios.delete(`http://localhost:5000/booking/${id}`)
+    .catch((err) =>console.log(err));
+
+    if(res.status !== 200){
+      return console.log("Unexpected error");
+    }
+
+    const resData = await res.data;
+    return resData;
+  }
+
+
+  // Get the  user details by the id
+  export const getUserDetails = async() =>{
+    const id = localStorage.getItem("userId");
+    const res = await axios.get(`http://localhost:5000/user/${id}`)
+    .catch(err => console.log(err));
+
+    if(res.status!==200){
+      return console.log("Unexpected error");
+    }
+    const resData = await res.data;
+    return resData;
+  }
+
+
+  export const addMovie = async (data) =>{
+    const res= axios.post(`http://localhost:5000/movie`,{
+      title:data.title,
+      description:data.description,
+      image:data.image,
+      price:data.price,
+      rating:data.rating,
+      releaseDate:  data.releaseDate,
+      cast:  data.cast,
+      featured:  data.featured,
+      admin: localStorage.getItem("adminId"),
+    },{
+      headers:{
+        Authorization:  `Bearer ${localStorage.getItem("token")}`  //so that only the admin can add movies
+      },
+    }
+  ).catch(err => console.log(err))
+
+  if(res.status !== 200){
+    return console.log("unexpected error occured")
+  }
+  const resData =  await res.data;
+  return resData;
+
+  }
