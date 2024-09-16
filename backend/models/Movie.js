@@ -15,15 +15,15 @@ const movieSchema = new mongoose.Schema({
     },
     posterUrl: {
         type: String,
-        required: true,
+        required: false,
     },
     bannerUrl: {
         type: String,
-        required: true,
+        required: false,
     },
     genre: {
         type: String,
-        required: true,
+        required: false,
     },
     duration: {
         type: String,
@@ -31,7 +31,7 @@ const movieSchema = new mongoose.Schema({
     },
     rating: {
         type: Number,
-        required: true,
+        required: false,
     },
     actors: {
         type: [String],

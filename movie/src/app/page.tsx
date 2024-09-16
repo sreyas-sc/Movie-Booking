@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { getAllMovies } from './api-helpers/api-helpers.js';
 
 interface UpcomingMovie {
-  id: number;
+  id: string;
   overview:  string;
   vote_average:  number;
   title: string;
@@ -19,7 +19,7 @@ interface UpcomingMovie {
 }
 
 interface LatestReleaseMovie {
-  id: number;
+  id: string;
   title: string;
   posterUrl: string;
   releaseDate: string;
@@ -31,7 +31,7 @@ interface UpcomingMovieResponse {
 }
 
 interface Movie {
-  _id: number;
+  _id: string;
   title: string;
   posterUrl: string;
   releaseDate: string;

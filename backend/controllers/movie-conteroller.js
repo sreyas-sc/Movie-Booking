@@ -1,83 +1,66 @@
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken';
 import Movie from '../models/Movie.js';
 import mongoose from 'mongoose';
 import Admin from '../models/Admin.js';
+import multer from 'multer';
+import path from 'path';
+import { upload } from '../config/multer-config.js';  
+import { promisify } from 'util';
+import jwt from 'jsonwebtoken';
 
-export const addMovie = async (req, res, next) => {
-    const extractedToken = req.headers.authorization.split(" ")[1]; 
-    if (!extractedToken || extractedToken.trim() === "") {
-        return res.status(404).json({ message: "Token not found" });
-    }
+// Promisify jwt.verify
+const verifyToken = promisify(jwt.verify);
 
-    let adminId;
-    jwt.verify(extractedToken, 'MYSECRETKEY', (err, decrypted) => {
-        if (err) {
-            return res.status(400).json({ message: `${err.message}` });
-        } else {
-            adminId = decrypted.id;
-            return;
-        }
-    });
-
-    const { title, description, releaseDate, posterUrl, bannerUrl, genre, duration, rating, actors, featured } = req.body;
-    if (!title || !description || !posterUrl || !bannerUrl || !duration || !rating || actors.length === 0) {
-        return res.status(400).json({ message: "Invalid inputs" });
-    }
-
-    let movie;
+export const addMovie = async (req, res) => {
     try {
-        movie = new Movie({
+        console.log("Extracted Token:", req.headers.authorization);
+        console.log("Request Body:", req.body);
+
+        const extractedToken = req.headers.authorization?.split(" ")[1];
+        if (!extractedToken) {
+            return res.status(404).json({ message: "Token not found" });
+        }
+
+        let adminId;
+        try {
+            const decoded = await verifyToken(extractedToken, 'MYSECRETKEY');
+            adminId = decoded.id;
+        } catch (err) {
+            return res.status(400).json({ message: err.message });
+        }
+
+        const { title, description, releaseDate, duration, featured } = req.body;
+        const posterUrl = req.file?.path;
+
+        if (!title || !description || !duration) {
+            return res.status(402).json({ message: "Invalid inputs!" });
+        }
+
+        let movie = new Movie({
             title,
             description,
             releaseDate: new Date(releaseDate),
             posterUrl,
-            bannerUrl,
-            genre,
             duration,
-            rating,
-            actors,
             featured,
             admin: adminId,
         });
 
         const session = await mongoose.startSession();
-        const adminUser = await Admin.findById(adminId);
         session.startTransaction();
         await movie.save({ session });
-
+        const adminUser = await Admin.findById(adminId);
         adminUser.addedMovies.push(movie);
         await adminUser.save({ session });
 
         await session.commitTransaction();
+        return res.status(201).json({ movie });
     } catch (err) {
-        return console.log(err);
-    }
-
-    if (!movie) {
+        console.error("Error during movie addition:", err);
         return res.status(500).json({ message: "Movie creation failed" });
     }
-    return res.status(201).json({ movie });
 };
 
-
-// send and verify the token from the header , when the admin login
-
-
-// Get the movie list
-// export const getAllMovies = async (req, res, next ) =>{
-//     let movies;
-//     try{
-//         movies = await Movie.find();
-//     }
-//     catch(err){
-//         return console.log(err)
-//     }
-
-//     if(!movies){
-//         return res.status(500).json({ message: "Request failed, No movies found" });
-//     }
-//     return res.status(200).json({ movies })
-// }
 
 export const getAllMovies = async (req, res, next) => {
     const { genre, rating, showtime } = req.query;

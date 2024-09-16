@@ -178,28 +178,55 @@ export const getAllMovies = async (filters = {}) => {
   }
 
 
-  export const addMovie = async (data) =>{
-    const res= axios.post(`http://localhost:5000/movie`,{
-      title:data.title,
-      description:data.description,
-      image:data.image,
-      price:data.price,
-      rating:data.rating,
-      releaseDate:  data.releaseDate,
-      cast:  data.cast,
-      featured:  data.featured,
-      admin: localStorage.getItem("adminId"),
-    },{
-      headers:{
-        Authorization:  `Bearer ${localStorage.getItem("token")}`  //so that only the admin can add movies
+  // export const addMovie = async (data) =>{
+  //   const res= axios.post(`http://localhost:5000/movie`,{
+  //     title:data.title,
+  //     description:data.description,
+  //     image:data.image,
+  //     price:data.price,
+  //     rating:data.rating,
+  //     releaseDate:  data.releaseDate,
+  //     cast:  data.cast,
+  //     featured:  data.featured,
+  //     admin: localStorage.getItem("adminId"),
+  //   },{
+  //     headers:{
+  //       Authorization:  `Bearer ${localStorage.getItem("token")}`  //so that only the admin can add movies
+  //     },
+  //   }
+  // ).catch(err => console.log(err))
+
+  // if(res.status !== 200){
+  //   return console.log("unexpected error occured")
+  // }
+  // const resData =  await res.data;
+  // return resData;
+
+  // }
+
+
+// Ensure you are using JavaScript and not TypeScript type annotations
+export const addMovie = async (formData) => {
+  console.log('Sending formData:', formData); // Log the formData
+
+  const token = localStorage.getItem("token");
+  console.log('Token:', token); // Log the token
+
+  try {
+    const res = await axios.post('http://localhost:5000/movie', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,
       },
+    });
+
+    if (res.status !== 201) {
+      throw new Error(`Failed to add movie, status: ${res.status}`);
     }
-  ).catch(err => console.log(err))
 
-  if(res.status !== 200){
-    return console.log("unexpected error occured")
+    return res.data;
+  } catch (err) {
+    console.error('Error adding movie:', err.response?.data || err.message);
+    throw err;
   }
-  const resData =  await res.data;
-  return resData;
-
-  }
+};

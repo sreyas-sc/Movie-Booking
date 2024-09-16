@@ -12,6 +12,7 @@ interface MovieCardProps {
   id: String;
 }
 
+
 const MovieCard: React.FC<MovieCardProps> = ({ title, description, releaseDate, posterUrl, duration, id }) => {
   console.log('MovieCard ID:', id);
   // console.log

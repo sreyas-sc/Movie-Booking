@@ -19,6 +19,7 @@ const MoviePage = () => {
     releaseDate: string;
     genre?: string;
     rating?: number;
+    duration: string;
   }
   
 
@@ -40,6 +41,7 @@ const MoviePage = () => {
     getAllMovies(filters)
       .then((data) => {
         if (data && data.movies) {
+          console.log(data.movies)
           setMovies(data.movies);
         }
       })
@@ -96,7 +98,7 @@ const MoviePage = () => {
             posterUrl={movie.posterUrl}
             releaseDate={movie.releaseDate}
             description={`Description for ${movie.title}`} // Placeholder description
-            duration="N/A" // Adjust this if you have duration data
+            duration={movie.duration}
           />
         ))}
       </Box>
