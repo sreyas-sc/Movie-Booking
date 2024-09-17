@@ -7,7 +7,9 @@ import { addTheater, getAllMovies, getAllTheatres } from '@/app/api-helpers/api-
 import { useRouter } from 'next/navigation';
 
 type ShowTime = { time: string };
+
 type Theater = {
+  _id: string;
   name: string;
   location: string;
   seatLayout: number[];
@@ -101,14 +103,27 @@ const AddTheater = () => {
     setFilteredTheaters(filtered);
   }, [search, theaters]);
 
+  // const handleAddShows = (theater: Theater) => {
+  //   // Save theater data to localStorage
+  //   localStorage.setItem('selectedTheater', JSON.stringify(theater));   
+  //   // Redirect to the add-shows page
+  //   router.push('/components/add-shows');
+  // };
   const handleAddShows = (theater: Theater) => {
-    // Save theater data to localStorage or sessionStorage
-    localStorage.setItem('selectedTheater', JSON.stringify(theater));   
+    console.log("the theatre id is:",theater._id)
+    // Save theater data, including the ID, to localStorage or sessionStorage
+    localStorage.setItem('selectedTheater', JSON.stringify({
+      _id: theater._id, 
+      name: theater.name, 
+      location: theater.location, 
+      seatLayout: theater.seatLayout, 
+      showtimes: theater.showtimes,
+    }));   
+    
     // Redirect to the add-shows page
     router.push('/components/add-shows');
   };
   
-
   return (
     <Box
       component="form"

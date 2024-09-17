@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const showSchema = new mongoose.Schema({
+const ShowSchema = new mongoose.Schema({
   theaterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Theater', required: true },
   movieId: { type: mongoose.Schema.Types.ObjectId, ref: 'Movie', required: true },
-  dates: [{ type: Date, required: true }],
-  times: [{ type: String, required: true }],
+  dates: [{ type: Date }],
+  times: [{ type: String }],
 });
 
-const Show = mongoose.model('Show', showSchema);
-module.exports = Show;
+const Show = mongoose.model('Show', ShowSchema);
+export default Show;

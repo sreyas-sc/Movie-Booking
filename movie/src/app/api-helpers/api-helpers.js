@@ -244,3 +244,27 @@ export const addShowtimesToTheater = async (theaterName, movieIds) => {
     throw error;
   }
 };
+
+
+// add shows to theatres
+export const addShows = async (formData) => {
+  console.log(formData)
+
+  try {
+    const res = await axios.post('http://localhost:5000/show/addshow', formData, {
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (res.status !== 201) {
+      throw new Error(`Failed to add theatre, status: ${res.status}`);
+    }
+
+    return res.data;
+  } catch (err) {
+    console.error('Error adding theatre:', err.response?.data || err.message);
+    throw err;
+  }
+};

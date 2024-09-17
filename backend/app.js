@@ -7,6 +7,7 @@ import adminRouter from "./routes/admin-routes.js";
 import movieRouter from "./routes/movie-routes.js";
 import bookingsRouter from "./routes/booking-routes.js";
 import theatreRouter from "./routes/theatre-routes.js"
+import showRouter from "./routes/show-routes.js";
 
 const app = express();
 app.use(cors());
@@ -17,8 +18,9 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/admin", adminRouter);
 app.use("/movie",  movieRouter);
-app.use("/booking", bookingsRouter)
-app.use("/theatre",  theatreRouter)
+app.use("/booking", bookingsRouter);
+app.use("/theatre",  theatreRouter);
+app.use("/show", showRouter);
 
 
 mongoose.connect(
