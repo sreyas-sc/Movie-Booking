@@ -20,7 +20,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, description, releaseDate, 
     <Card 
       sx={{ 
         width: 300, 
-        height: 450, 
+        height: 600, 
         borderRadius: 5, 
         display: 'flex', 
         flexDirection: 'column',
@@ -32,7 +32,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, description, releaseDate, 
     >
       <CardMedia
         component="img"
-        height={200}  // Adjust this value to control the image size
+        width={200}
+        height={350}  // Adjust this value to control the image size
         image={posterUrl}
         alt={title}
       />

@@ -9,6 +9,8 @@ import bookingsRouter from "./routes/booking-routes.js";
 import theatreRouter from "./routes/theatre-routes.js"
 import showRouter from "./routes/show-routes.js";
 
+
+
 const app = express();
 app.use(cors());
 

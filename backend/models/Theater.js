@@ -55,7 +55,6 @@ const theatreSchema = new mongoose.Schema({
   name: String,
   location: String,
   seatLayout: { type: [Number], default: [] }, // Ensure seatLayout is an array
-  // seatLayout: { type: Number  },
   showtimes: [{ time: String }]
 });
 

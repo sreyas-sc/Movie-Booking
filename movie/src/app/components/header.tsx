@@ -102,8 +102,8 @@ const Header: React.FC = () => {
               <Tab label="Add Theatre" component="a" sx={{ fontWeight: 'bold' }} />
               </Link>,
 
-              <Link key="adminProfile" href="/admin" legacyBehavior passHref>
-                <Tab label="Profile" component="a" sx={{ fontWeight: 'bold' }} />
+              <Link key="adminProfile" href="/components/admin-view-shows" legacyBehavior passHref>
+                <Tab label="Shows" component="a" sx={{ fontWeight: 'bold' }} />
               </Link>,
               <Link key="adminLogout" href="/" legacyBehavior passHref>
                 <Tab onClick={() => logout(true)} label="Logout" component="a" sx={{ fontWeight: 'bold' }} />

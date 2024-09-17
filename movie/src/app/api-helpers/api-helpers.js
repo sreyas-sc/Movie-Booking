@@ -268,3 +268,21 @@ export const addShows = async (formData) => {
     throw err;
   }
 };
+
+
+// get all the shows(Showss in theatres)
+export const getAllShows = async () => {
+  try {
+    const res = await axios.get(`http://localhost:5000/show/getallshows`);
+
+    if (res.status !== 200) {
+      console.log("No Data");
+      return;
+    }
+
+    const data = await res.data;
+    return data;
+  } catch (err) {
+    console.log("Error: ", err.message);
+  }
+};

@@ -7,6 +7,11 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import Link from 'next/link';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
+import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/router';
+
+
 
 
 interface AuthFormProps {
@@ -42,7 +47,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSubmit, isAdmin }) => {
 
 
 
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   
     // Basic validation for required fields
@@ -58,12 +63,35 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       signup: isAdmin ? false : isSignup
     });
   
-    onSubmit({
+    try{
+    await onSubmit({
       email: inputs.email,
       phone: inputs.phone,
       password: inputs.password, 
       signup: isAdmin ? false : isSignup,  // Check if it's a signup or signin
     });
+
+    const router = useRouter();
+    router.push('/components/movies');
+
+    // await Swal.fire({
+    //   position: 'top-end',
+    //   icon: 'success',
+    //   title: 'Login Successful',
+    //   showConfirmButton: false,
+    //   timer: 1500
+    // });
+
+
+
+  }catch (err) {
+    // console.error('Login failed:', err);
+    // Swal.fire({
+    //   icon: 'error',
+    //   title: 'Oops...',
+    //   text: 'Something went wrong!',
+    // });
+  }
   };
   
   

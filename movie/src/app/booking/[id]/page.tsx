@@ -54,11 +54,14 @@ const Booking: React.FC = () => {
                 justifyContent={'column'} 
                 flexDirection={'column'} 
                 pt={3} width='50%' 
+                marginLeft={'50px'}
                 marginRight={'auto'}>
                   {/* The poster image of moviee */}
                   <img 
-                    width='80%' 
-                    height={"300px"} 
+                    width='40%' 
+                    height='70%'
+                    
+                    // height={"300px"} 
                     src={movie.posterUrl} 
                     alt={movie.title} />
                   <Box 
