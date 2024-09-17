@@ -41,6 +41,7 @@ const Header: React.FC = () => {
 
         {/* Autocomplete textbox to search for the movie names */}
         <Box width={"50%"} margin={"auto"}>
+        {!isAdminLoggedIn && [
           <Autocomplete
             freeSolo
             options={movies && movies.length > 0 ? movies.map((option) => option.title) : []}
@@ -53,6 +54,7 @@ const Header: React.FC = () => {
               />
             )}
           />
+        ] }
         </Box>
 
         {/* Box for the Tabs */}
@@ -95,6 +97,15 @@ const Header: React.FC = () => {
               <Link key="addMovie" href="/components/add-movie" legacyBehavior passHref>
                 <Tab label="Add Movie" component="a" sx={{ fontWeight: 'bold' }} />
               </Link>,
+              
+              <Link key="addTheatre" href="/components/add-theatre" legacyBehavior passHref>
+              <Tab label="Add Theatre" component="a" sx={{ fontWeight: 'bold' }} />
+              </Link>,
+
+              <Link key="addTheatre" href="/components/add-shows" legacyBehavior passHref>
+              <Tab label="Add Shows" component="a" sx={{ fontWeight: 'bold' }} />
+              </Link>,
+
               <Link key="adminProfile" href="/admin" legacyBehavior passHref>
                 <Tab label="Profile" component="a" sx={{ fontWeight: 'bold' }} />
               </Link>,

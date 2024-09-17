@@ -6,6 +6,8 @@ import userRouter from "./routes/user-routes.js";
 import adminRouter from "./routes/admin-routes.js";
 import movieRouter from "./routes/movie-routes.js";
 import bookingsRouter from "./routes/booking-routes.js";
+import theatreRouter from "./routes/theatre-routes.js"
+
 const app = express();
 app.use(cors());
 
@@ -16,6 +18,8 @@ app.use("/user", userRouter);
 app.use("/admin", adminRouter);
 app.use("/movie",  movieRouter);
 app.use("/booking", bookingsRouter)
+app.use("/theatre",  theatreRouter)
+
 
 mongoose.connect(
         "mongodb+srv://sreyass2000:best1syett0c0me@cluster0.wm0v7.mongodb.net/newtestname?retryWrites=true&w=majority&appName=Cluster0"

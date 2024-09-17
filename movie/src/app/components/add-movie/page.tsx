@@ -1,9 +1,11 @@
 
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { addMovie } from '@/app/api-helpers/api-helpers';
 import { Box, Button, TextField, Typography, Checkbox, Card, CardMedia, CardContent, Grid } from '@mui/material';
 import React from 'react';
+import { getAllTheatres } from '@/app/api-helpers/api-helpers';
+
 
 const TMDB_API_KEY = '446d69b8e014e2930a30c318caf3cfd1'; // Replace with your API key
 
@@ -74,6 +76,11 @@ const AddMovie = () => {
       .catch((err) => console.error('Error adding movie:', err));
   };
   
+  useEffect(() => {
+    getAllTheatres()
+      .then((data) => console.log(data.movies)) // Ensure that data.movies matches the Movie interface
+      .catch(err => console.log(err));
+  }, []);
 
   const handleTmdbSearch = () => {
     if (!tmdbQuery) return;
@@ -82,6 +89,8 @@ const AddMovie = () => {
       .then((data) => {
         if (data.results) {
           setTmdbMovies(data.results);
+          console.log("The  TMDB API returned the following movies:", data.results);
+
         }
       })
       .catch((err) => console.error('Error fetching TMDB movies:', err));
@@ -96,7 +105,7 @@ const AddMovie = () => {
       duration: '',
       featured: false,
       genre: '',
-      rating: ''
+      rating: movie.vote_average
     });
   };
 

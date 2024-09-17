@@ -1,21 +1,5 @@
 import { AutoFixOff } from '@mui/icons-material';
 import axios from 'axios'
-// export const getAllMovies = async () => {
-//     try {
-//       const res = await axios.get("http://localhost:5000/movie");
-  
-//       if (res.status !== 200) {
-//         console.log("No Data");
-//         return;
-//       }
-  
-//       const data = await res.data;
-//       return data;
-//     } catch (err) {
-//       console.log("Error: ", err.message);
-//     }
-//   };
-
 
 export const getAllMovies = async (filters = {}) => {
   try {
@@ -120,19 +104,6 @@ export const getAllMovies = async (filters = {}) => {
     }
   };
 
-
-  // export const getUserBooking = async () =>{
-  //   const id = localStorage.getItem("userId");
-  //   const res = await axios.get(`http://localhost:5000/user/bookings/${id}`)
-  //   .catch(err=>console.log(err));
-
-  //   if(res.status !== 200){
-  //     return console.log("Unexpected error");
-  //   }
-
-  //   const resdata= await res.data;
-  //   return resdata;
-  // }
   export const getUserBooking = async () => {
     try {
       const response = await fetch('http://localhost:5000/user/bookings/${id}', {
@@ -177,35 +148,6 @@ export const getAllMovies = async (filters = {}) => {
     return resData;
   }
 
-
-  // export const addMovie = async (data) =>{
-  //   const res= axios.post(`http://localhost:5000/movie`,{
-  //     title:data.title,
-  //     description:data.description,
-  //     image:data.image,
-  //     price:data.price,
-  //     rating:data.rating,
-  //     releaseDate:  data.releaseDate,
-  //     cast:  data.cast,
-  //     featured:  data.featured,
-  //     admin: localStorage.getItem("adminId"),
-  //   },{
-  //     headers:{
-  //       Authorization:  `Bearer ${localStorage.getItem("token")}`  //so that only the admin can add movies
-  //     },
-  //   }
-  // ).catch(err => console.log(err))
-
-  // if(res.status !== 200){
-  //   return console.log("unexpected error occured")
-  // }
-  // const resData =  await res.data;
-  // return resData;
-
-  // }
-
-
-// Ensure you are using JavaScript and not TypeScript type annotations
 export const addMovie = async (formData) => {
   console.log('Sending formData:', formData); // Log the formData
 
@@ -228,5 +170,54 @@ export const addMovie = async (formData) => {
   } catch (err) {
     console.error('Error adding movie:', err.response?.data || err.message);
     throw err;
+  }
+};
+
+export const addTheater = async (theaterData) => {
+  const token = localStorage.getItem("token");
+  console.log('Token:', token); // Log the token
+  console.log(theaterData)
+
+  try {
+    const res = await axios.post('http://localhost:5000/theatre/add', theaterData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (res.status !== 201) {
+      throw new Error(`Failed to add theatre, status: ${res.status}`);
+    }
+
+    return res.data;
+  } catch (err) {
+    console.error('Error adding theatre:', err.response?.data || err.message);
+    throw err;
+  }
+};
+
+
+export const getAllTheatres = async (filters = {}) => {
+  try {
+    // Convert filters to query parameters
+    const params = new URLSearchParams(filters).toString();
+    
+    // Send GET request to the backend
+    const res = await axios.get(`http://localhost:5000/theatre?${params}`);
+
+    // Check response status
+    if (res.status !== 200) {
+      console.log("No Data");
+      return [];
+    }
+
+    // Extract and return data from the response
+    const data = await res.data;
+    return data;
+  } catch (err) {
+    // Handle and log errors
+    console.error("Error fetching theatres:", err.message);
+    return []; // Return an empty array on error
   }
 };
