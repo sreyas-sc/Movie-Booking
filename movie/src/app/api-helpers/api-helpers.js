@@ -221,3 +221,26 @@ export const getAllTheatres = async (filters = {}) => {
     return []; // Return an empty array on error
   }
 };
+
+
+
+export const addShowtimesToTheater = async (theaterName, movieIds) => {
+  try {
+    const response = await fetch('/api/theaters/add-showtimes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ theaterName, movieIds }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add showtimes: ${response.statusText}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error adding showtimes to theater:', error.message);
+    throw error;
+  }
+};
