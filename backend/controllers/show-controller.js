@@ -38,9 +38,9 @@ export const getAllShows = async (req, res) => {
   try {
     // Fetch all show documents from the database
     const shows = await Show.find().populate('theaterId').populate('movieId');
-
-    // Respond with the list of shows
+    console.log("Fetched shows:", shows); // Log shows to verify the data
     res.status(200).json(shows);
+    // Respond with the list of shows
   } catch (error) {
     console.error('Error fetching shows:', error);
     res.status(500).json({ error: 'Internal Server Error' });
