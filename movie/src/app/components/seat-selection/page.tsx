@@ -67,33 +67,53 @@ const SeatSelection: React.FC = () => {
   };
 
 
-// const handleBookSeats = () => {
-//     fetch('http://localhost:5000/booking/book', {
+//     const handleBookSeats = () => {
+  
+//       const script = document.createElement('script');
+//       script.src = 'https://checkout.razorpay.com/v1/checkout.js'; // Razorpay script URL
+//       script.async= true;
+//       script.onload = () => proceedBooking(); // Proceed to booking once Razorpay is loaded
+//       script.onerror = () => {
+//         console.error('Failed to load Razorpay.');
+//         toast.error('Failed to load payment gateway.');
+//       };
+//       document.body.appendChild(script);
+//         proceedBooking(); // Proceed if Razorpay is already loaded
+    
+//   };
+
+//   const proceedBooking = () => {
+//     // Create the Razorpay order first
+//     fetch('http://localhost:5000/booking/razorpay', {
 //       method: 'POST',
 //       headers: {
-//         'Content-Type': 'application/json'
+//         'Content-Type': 'application/json',
 //       },
-//       body: JSON.stringify({ 
-//         movieName, 
-//         movieId,   
-//         theaterName: selectedTheater?.split('-')[1] || '', 
-//         theaterId: selectedTheater?.split('-')[0] || '',  
-//         date: selectedDate, 
-//         time: Object.values(selectedTimes).join(', '), 
+//       body: JSON.stringify({
+//         movieName,
+//         movieId,
+//         theaterName: selectedTheater?.split('-')[1] || '',
+//         theaterId: selectedTheater?.split('-')[0] || '',
+//         date: selectedDate,
+//         time: Object.values(selectedTimes).join(', '),
 //         seatNumbers: Array.from(selectedSeats),
-//         totalAmount: totalCost, 
-//         userId: localStorage.getItem('userId'), 
-//         // paymentId: response.razorpay_payment_id 
-//         amount: totalCost * 100, currency: 'INR' }) // Amount in paise
+//         totalAmount: totalCost, // Total cost in rupees
+//         userId: localStorage.getItem('userId'),
+//         amount: totalCost * 100, // Razorpay amount in paise
+//         currency: 'INR',
+//       }),
 //     })
-//       .then(response => response.json())
-//       .then(data => {
-//         if (!window.Razorpay) {
-//           console.error('Razorpay library not loaded.');
-//           toast.error('Payment library not loaded.');
+
+//       .then((response) => response.json())
+//       .then((data) => {
+//         console.log("data is", data)
+//         if (!data || !data.orderId) {
+//           console.error('Order creation failed:', data);
+//           toast.error('Failed to create booking order.');
 //           return;
 //         }
   
+//         // Razorpay options for payment gateway
 //         const options = {
 //           key: data.key,
 //           amount: data.amount,
@@ -102,162 +122,59 @@ const SeatSelection: React.FC = () => {
 //           description: 'Seat Booking',
 //           order_id: data.orderId,
 //           handler: function (response: any) {
-//             console.log('Payment successful:', response);
-//             fetch('/api/save-booking', {
+//             console.log("!!!!---!!!");
+//             // Payment was successful, now save the booking
+//             fetch('http://localhost:5000/booking/book', {
 //               method: 'POST',
 //               headers: {
-//                 'Content-Type': 'application/json'
+//                 'Content-Type': 'application/json',
 //               },
 //               body: JSON.stringify({
 //                 movieName,
 //                 movieId,
+//                 userId:localStorage.getItem('userId'),
 //                 theaterName: selectedTheater?.split('-')[1] || '',
 //                 theaterId: selectedTheater?.split('-')[0] || '',
 //                 date: selectedDate,
 //                 time: Object.values(selectedTimes).join(', '),
 //                 seatNumbers: Array.from(selectedSeats),
-//                 amount: totalCost
-//               })
+//                 amount: totalCost, // Total cost in rupees
+//                 paymentId: response.razorpay_payment_id, // Razorpay payment ID
+//               }),
 //             })
-//               .then(response => response.json())
+//               .then((response) => response.json())
 //               .then(() => {
-//                 router.push('/confirmation'); // Redirect to confirmation page
+//                 Swal.fire({
+//                     title: "Payment Done!",
+//                     text: "The movie booking is completed",
+//                     icon: "success"
+//                   });
+
 //               })
-//               .catch(error => {
+//               .catch((error) => {
 //                 console.error('Failed to save booking:', error);
 //                 toast.error('Failed to save booking.');
 //               });
 //           },
 //           prefill: {
-//             name: '',
+//             name: '', // Prefill user details if available
 //             email: '',
-//             contact: ''
+//             contact: '',
 //           },
 //           theme: {
-//             color: '#F37254'
-//           }
+//             color: '#F37254',
+//           },
 //         };
   
-//         // Initialize Razorpay checkout
+//         // Initialize Razorpay and open the payment gateway
 //         const payment = new (window as any).Razorpay(options);
 //         payment.open();
 //       })
-//       .catch(error => {
+//       .catch((error) => {
 //         console.error('Failed to create Razorpay order:', error);
 //         toast.error('Failed to create order.');
 //       });
 //   };
-  
-const handleBookSeats = () => {
-    // Check if Razorpay is loaded
-   
-    
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js'; // Razorpay script URL
-      script.async= true;
-      script.onload = () => proceedBooking(); // Proceed to booking once Razorpay is loaded
-      script.onerror = () => {
-        console.error('Failed to load Razorpay.');
-        toast.error('Failed to load payment gateway.');
-      };
-      document.body.appendChild(script);
-        proceedBooking(); // Proceed if Razorpay is already loaded
-    
-  };
-
-  const proceedBooking = () => {
-    // Create the Razorpay order first
-    fetch('http://localhost:5000/booking/razorpay', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        movieName,
-        movieId,
-        theaterName: selectedTheater?.split('-')[1] || '',
-        theaterId: selectedTheater?.split('-')[0] || '',
-        date: selectedDate,
-        time: Object.values(selectedTimes).join(', '),
-        seatNumbers: Array.from(selectedSeats),
-        totalAmount: totalCost, // Total cost in rupees
-        userId: localStorage.getItem('userId'),
-        amount: totalCost * 100, // Razorpay amount in paise
-        currency: 'INR',
-      }),
-    })
-
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("data is", data)
-        if (!data || !data.orderId) {
-          console.error('Order creation failed:', data);
-          toast.error('Failed to create booking order.');
-          return;
-        }
-  
-        // Razorpay options for payment gateway
-        const options = {
-          key: data.key,
-          amount: data.amount,
-          currency: data.currency,
-          name: 'Movie Booking',
-          description: 'Seat Booking',
-          order_id: data.orderId,
-          handler: function (response: any) {
-            console.log("!!!!---!!!");
-            // Payment was successful, now save the booking
-            fetch('http://localhost:5000/booking/book', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                movieName,
-                movieId,
-                userId:localStorage.getItem('userId'),
-                theaterName: selectedTheater?.split('-')[1] || '',
-                theaterId: selectedTheater?.split('-')[0] || '',
-                date: selectedDate,
-                time: Object.values(selectedTimes).join(', '),
-                seatNumbers: Array.from(selectedSeats),
-                amount: totalCost, // Total cost in rupees
-                paymentId: response.razorpay_payment_id, // Razorpay payment ID
-              }),
-            })
-              .then((response) => response.json())
-              .then(() => {
-                Swal.fire({
-                    title: "Payment Done!",
-                    text: "The movie booking is completed",
-                    icon: "success"
-                  });
-
-              })
-              .catch((error) => {
-                console.error('Failed to save booking:', error);
-                toast.error('Failed to save booking.');
-              });
-          },
-          prefill: {
-            name: '', // Prefill user details if available
-            email: '',
-            contact: '',
-          },
-          theme: {
-            color: '#F37254',
-          },
-        };
-  
-        // Initialize Razorpay and open the payment gateway
-        const payment = new (window as any).Razorpay(options);
-        payment.open();
-      })
-      .catch((error) => {
-        console.error('Failed to create Razorpay order:', error);
-        toast.error('Failed to create order.');
-      });
-  };
   
   
   
@@ -287,6 +204,106 @@ const handleBookSeats = () => {
 //     return result;
 //   };
 
+
+const handleBookSeats = () => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'; // Razorpay script URL
+    script.async = true;
+    script.onload = () => proceedBooking(); // Proceed to booking once Razorpay is loaded
+    script.onerror = () => {
+      console.error('Failed to load Razorpay.');
+      toast.error('Failed to load payment gateway.');
+    };
+    document.body.appendChild(script);
+    proceedBooking(); // Proceed if Razorpay is already loaded
+  };
+  
+  const proceedBooking = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/booking/razorpay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          movieName,
+          movieId,
+          theaterName: selectedTheater?.split('-')[1] || '',
+          theaterId: selectedTheater?.split('-')[0] || '',
+          date: selectedDate,
+          time: Object.values(selectedTimes).join(', '),
+          seatNumbers: Array.from(selectedSeats),
+          totalAmount: totalCost,
+          userId: localStorage.getItem('userId'),
+          amount: totalCost * 100, // Razorpay amount in paise
+          currency: 'INR',
+        }),
+      });
+      
+      const data = await response.json();
+      if (!data || !data.orderId) {
+        console.error('Order creation failed:', data);
+        toast.error('Failed to create booking order.');
+        return;
+      }
+  
+      const options = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'Movie Booking',
+        description: 'Seat Booking',
+        order_id: data.orderId,
+        handler: async function (response: any) {
+          console.log('Payment successful!');
+          
+          // Send booking data to the backend after successful payment
+          const bookingResponse = await fetch('http://localhost:5000/booking/book', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              movieName,
+              movieId,
+              userId: localStorage.getItem('userId'),
+              theaterName: selectedTheater?.split('-')[1] || '',
+              theaterId: selectedTheater?.split('-')[0] || '',
+              date: selectedDate,
+              time: Object.values(selectedTimes).join(', '),
+              seatNumbers: Array.from(selectedSeats),
+              totalAmount: totalCost, // Total cost in rupees
+              paymentId: response.razorpay_payment_id, // Razorpay payment ID
+            }),
+          });
+          
+          const bookingData = await bookingResponse.json();
+          if (bookingData) {
+            Swal.fire({
+              title: "Payment Done!",
+              text: "The movie booking is completed",
+              icon: "success"
+            });
+          }
+        },
+        prefill: {
+          name: '', // Prefill user details if available
+          email: '',
+          contact: '',
+        },
+        theme: {
+          color: '#F37254',
+        },
+      };
+  
+      const payment = new (window as any).Razorpay(options);
+      payment.open();
+    } catch (error) {
+      console.error('Failed to create Razorpay order:', error);
+      toast.error('Failed to create order.');
+    }
+  };
+  
 const generateSeatLayout = (seatNumbers: number[], rows: number): string[][] => {
     const seatLabels: string[] = [];
     let index = 0;

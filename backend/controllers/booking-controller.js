@@ -3,67 +3,31 @@ import mongoose from 'mongoose';
 import Bookings from '../models/Bookings.js';
 import Movie from '../models/Movie.js';
 import razorpay from "razorpay"
+import QRCode from 'qrcode';
+import dotenv from 'dotenv';
+import  Twilio  from 'twilio';
 
+dotenv.config();
 
-// Have some errors in this page (newBooking, booking)
+const client = new Twilio(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN );
 
-// export const newBooking = async (req, res, next) =>{
-//     const {movie, date, seatNumber, user}= req.body;
-
-
-//     // Validate the user and the movie
-//     let existingMovie;
-//     let existingUser;
-//     try{
-//         existingMovie = await Movie.findById(movie);
-//         existingUser = await user.findById(user);
-//     }
-//     catch(err){
-//         return console.log(err)
-//     }   
-//     if(!user){
-//         return res.status(404).json({message: "User not found with the given id"})
-//     }
-//     if(!existingMovie){
-//         return res.status(404).json({message :" Movie not found with the given id"})
-
-//     }
-//     let booking;
-
-//     try{ 
-//         booking = await Bookings({
-//             movie, 
-//             date: new Date(`${date}`), 
-//             seatNumber, 
-//             user
-//         }); // Assign the new booking object
-//         const session = await mongoose.startSession();
-//         session.startTransaction();
-//         existingUser.bookings.push(booking);
-//         existingMovie.bookings.push(booking);
-//         await  existingUser.save({session});
-//         await existingMovie.save({session});
-//         await booking.save({ session });
-//         session.commitTransaction();
-//              //Save the booking
-//     }
-//     catch(err){
-//         return console.log(err)
-//     }
-//     if(!newBooking){
-//         return res.status(500).json({message: "Booking failed"})
-//     }
-
-//     return res.status(200).json({ booking })
-// }
-
-
-// POST /api/bookings/new
-
+async function sendWhatsappMessage(to, message) {
+  try {
+    const response = await client.messages.create({
+      body: message,
+      from: `whatsapp:${process.env.WHATSAPP_NO}`,  // Twilio WhatsApp sandbox number
+      to: `whatsapp:${+918111904512}`,  // Customer's WhatsApp number
+    });
+    console.log("Message sent, SID:", response.sid);
+  } catch (error) {
+    console.error("Error sending WhatsApp message:", error);
+    throw new Error("Error sending WhatsApp message");
+  }
+}
 
 const razorpayInstance = new razorpay({
-  key_id: 'rzp_test_XVCuqGBYNmjrHu', // Ensure these are set in your environment
-  key_secret: 'DezgdJ6idvV36PrCY9ame9x6',
+  key_id: process.env.KEY_ID,
+  key_secret: process.env.KEY_SECRET,
 });
 
 export const newBooking = async (req, res) => {
@@ -84,12 +48,16 @@ export const newBooking = async (req, res) => {
         totalAmount,
         userId,
         paymentId,
-        paymentStatus: 'pending',
+        paymentStatus: 'paid',
       });
   
       // Save the booking to the database
       const savedBooking = await booking.save();
-  
+    
+      await sendWhatsappMessage(
+        '+918111904512', 
+        `Hi! Your booking for *${movieName}* on *${new Date(date).toLocaleDateString('en-IN')}* at *${time}* is confirmed!`
+      );
       // Send the response with the booking data
       return res.status(201).json({ message: 'Booking successful', booking: savedBooking });
     } catch (error) {
@@ -143,54 +111,32 @@ export const newBooking = async (req, res) => {
 
 
   // Razorpay setup
-
-  // Razorpay order creation logic
-// export const razorpayOrder = async (req, res) => {
-//   try {
-//     const { totalAmount } = req.body;  // Assuming you're passing totalAmount from the frontend
-
-//     const razorpayOrder = await razorpay.orders.create({
-//       amount: totalAmount * 100,  // Amount in paise (Razorpay works with paise)
-//       currency: 'INR',
-//       receipt: 'receipt_id',
-//     });
-
-//     // Send the order details back to the frontend
-//     res.json({
-//       key: rzp_test_XVCuqGBYNmjrHu,  // Your Razorpay Key ID
-//       // RAZORPAY_KEY_ID=rzp_test_XVCuqGBYNmjrHu
-//       // RAZORPAY_KEY_SECRET=DezgdJ6idvV36PrCY9ame9x6
-//       amount: razorpayOrder.amount,
-//       currency: razorpayOrder.currency,
-//       orderId: razorpayOrder.id,  // This is the Razorpay order ID
-//     });
-//   } catch (error) {
-//     console.error('Error creating Razorpay order:', error);
-//     res.status(500).json({ error: 'Failed to create Razorpay order' });
-//   }
-// };
-
-export const razorpayOrder = async (req, res) => {
+  export const razorpayOrder = async (req, res) => {
   try {
-    console.log("razorpay body is:::::!!!! ", req.body)
-    const { totalAmount } = req.body;
+    const { totalAmount, userId, movieName, theaterName, bookingDate, phoneNumber } = req.body;
 
-
+    // Create Razorpay order
     const razorpayOrder = await razorpayInstance.orders.create({
       amount: totalAmount * 100,  // Amount in paise
       currency: 'INR',
       receipt: 'receipt_id',
     });
 
+    // Send the response back first
     res.json({
-      key: 'rzp_test_XVCuqGBYNmjrHu',  // Your Razorpay Key ID
+      key: process.env.RAZORPAY_KEY_ID,  // Your Razorpay Key ID
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
-      orderId: razorpayOrder.id,  // This is the Razorpay order ID
+      orderId: razorpayOrder.id,  // Razorpay order ID
     });
   } catch (error) {
     console.error('Error creating Razorpay order:', error);
-    res.status(500).json({ error: 'Failed to create Razorpay order' });
+    // In case of error, ensure response hasn't been sent already
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to create Razorpay order' });
+    }
   }
 };
+
+
   
