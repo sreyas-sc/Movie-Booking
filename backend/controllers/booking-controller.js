@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import Bookings from '../models/Bookings.js';
 import Movie from '../models/Movie.js';
+import razorpay from "razorpay"
 
 
 // Have some errors in this page (newBooking, booking)
@@ -58,6 +59,13 @@ import Movie from '../models/Movie.js';
 
 
 // POST /api/bookings/new
+
+
+const razorpayInstance = new razorpay({
+  key_id: 'rzp_test_XVCuqGBYNmjrHu', // Ensure these are set in your environment
+  key_secret: 'DezgdJ6idvV36PrCY9ame9x6',
+});
+
 export const newBooking = async (req, res) => {
     console.log("backend call works for the add bookings")
     console.log(req.body)
@@ -132,3 +140,57 @@ export const newBooking = async (req, res) => {
   
     return res.status(200).json({ message: "Successfully deleted the booking" });
   };
+
+
+  // Razorpay setup
+
+  // Razorpay order creation logic
+// export const razorpayOrder = async (req, res) => {
+//   try {
+//     const { totalAmount } = req.body;  // Assuming you're passing totalAmount from the frontend
+
+//     const razorpayOrder = await razorpay.orders.create({
+//       amount: totalAmount * 100,  // Amount in paise (Razorpay works with paise)
+//       currency: 'INR',
+//       receipt: 'receipt_id',
+//     });
+
+//     // Send the order details back to the frontend
+//     res.json({
+//       key: rzp_test_XVCuqGBYNmjrHu,  // Your Razorpay Key ID
+//       // RAZORPAY_KEY_ID=rzp_test_XVCuqGBYNmjrHu
+//       // RAZORPAY_KEY_SECRET=DezgdJ6idvV36PrCY9ame9x6
+//       amount: razorpayOrder.amount,
+//       currency: razorpayOrder.currency,
+//       orderId: razorpayOrder.id,  // This is the Razorpay order ID
+//     });
+//   } catch (error) {
+//     console.error('Error creating Razorpay order:', error);
+//     res.status(500).json({ error: 'Failed to create Razorpay order' });
+//   }
+// };
+
+export const razorpayOrder = async (req, res) => {
+  try {
+    console.log("razorpay body is:::::!!!! ", req.body)
+    const { totalAmount } = req.body;
+
+
+    const razorpayOrder = await razorpayInstance.orders.create({
+      amount: totalAmount * 100,  // Amount in paise
+      currency: 'INR',
+      receipt: 'receipt_id',
+    });
+
+    res.json({
+      key: 'rzp_test_XVCuqGBYNmjrHu',  // Your Razorpay Key ID
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency,
+      orderId: razorpayOrder.id,  // This is the Razorpay order ID
+    });
+  } catch (error) {
+    console.error('Error creating Razorpay order:', error);
+    res.status(500).json({ error: 'Failed to create Razorpay order' });
+  }
+};
+  

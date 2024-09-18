@@ -31,7 +31,7 @@ const bookingSchema = new mongoose.Schema({
   date: { type: String, required: true },
   time: { type: String, required: true },
   seatNumbers: { type: [String], required: true },
-  totalAmount: { type: Number, required: true },
+  totalAmount: { type: Number, required: false },
   userId: { type: String, required: true },
   paymentId: { type: String, required: false }, // Razorpay payment ID
   paymentStatus: { type: String, required: true, enum: ['pending', 'paid'], default: 'pending' }
