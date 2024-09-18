@@ -1,8 +1,8 @@
-
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Grid } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast'; // or any other toast library you're using
 
 const SeatSelection: React.FC = () => {
   const [seatLayout, setSeatLayout] = useState<string[][]>([]);
@@ -11,8 +11,6 @@ const SeatSelection: React.FC = () => {
   const [selectedTheater, setSelectedTheater] = useState<string | null>(null);
   const [movieName, setMovieName] = useState<string | null>(null);
   const [movieId, setMovieId] = useState<string | null>(null);
-
-
   const [selectedTimes, setSelectedTimes] = useState<{ [key: string]: string | null }>({});
   const router = useRouter();
 
@@ -36,6 +34,24 @@ const SeatSelection: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => {
+      console.log('Razorpay script loaded successfully.');
+    };
+    script.onerror = () => {
+      console.error('Failed to load Razorpay script.');
+    };
+    document.body.appendChild(script);
+  
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+  
+
   const handleSeatClick = (seatLabel: string) => {
     setSelectedSeats(prev => {
       const newSelection = new Set(prev);
@@ -48,30 +64,204 @@ const SeatSelection: React.FC = () => {
     });
   };
 
-  const handleBookSeats = () => {
-    console.log('Selected Seats:', Array.from(selectedSeats));
 
-    // Proceed with booking logic here
-
-    router.push('/confirmation'); // Redirect to confirmation page
+// const handleBookSeats = () => {
+//     fetch('http://localhost:5000/booking/book', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify({ 
+//         movieName, 
+//         movieId,   
+//         theaterName: selectedTheater?.split('-')[1] || '', 
+//         theaterId: selectedTheater?.split('-')[0] || '',  
+//         date: selectedDate, 
+//         time: Object.values(selectedTimes).join(', '), 
+//         seatNumbers: Array.from(selectedSeats),
+//         totalAmount: totalCost, 
+//         userId: localStorage.getItem('userId'), 
+//         // paymentId: response.razorpay_payment_id 
+//         amount: totalCost * 100, currency: 'INR' }) // Amount in paise
+//     })
+//       .then(response => response.json())
+//       .then(data => {
+//         if (!window.Razorpay) {
+//           console.error('Razorpay library not loaded.');
+//           toast.error('Payment library not loaded.');
+//           return;
+//         }
+  
+//         const options = {
+//           key: data.key,
+//           amount: data.amount,
+//           currency: data.currency,
+//           name: 'Movie Booking',
+//           description: 'Seat Booking',
+//           order_id: data.orderId,
+//           handler: function (response: any) {
+//             console.log('Payment successful:', response);
+//             fetch('/api/save-booking', {
+//               method: 'POST',
+//               headers: {
+//                 'Content-Type': 'application/json'
+//               },
+//               body: JSON.stringify({
+//                 movieName,
+//                 movieId,
+//                 theaterName: selectedTheater?.split('-')[1] || '',
+//                 theaterId: selectedTheater?.split('-')[0] || '',
+//                 date: selectedDate,
+//                 time: Object.values(selectedTimes).join(', '),
+//                 seatNumbers: Array.from(selectedSeats),
+//                 amount: totalCost
+//               })
+//             })
+//               .then(response => response.json())
+//               .then(() => {
+//                 router.push('/confirmation'); // Redirect to confirmation page
+//               })
+//               .catch(error => {
+//                 console.error('Failed to save booking:', error);
+//                 toast.error('Failed to save booking.');
+//               });
+//           },
+//           prefill: {
+//             name: '',
+//             email: '',
+//             contact: ''
+//           },
+//           theme: {
+//             color: '#F37254'
+//           }
+//         };
+  
+//         // Initialize Razorpay checkout
+//         const payment = new (window as any).Razorpay(options);
+//         payment.open();
+//       })
+//       .catch(error => {
+//         console.error('Failed to create Razorpay order:', error);
+//         toast.error('Failed to create order.');
+//       });
+//   };
+  
+const handleBookSeats = () => {
+    // Check if Razorpay is loaded
+    if (!window.Razorpay) {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'; // Razorpay script URL
+      script.onload = () => proceedBooking(); // Proceed to booking once Razorpay is loaded
+      script.onerror = () => {
+        console.error('Failed to load Razorpay.');
+        toast.error('Failed to load payment gateway.');
+      };
+      document.body.appendChild(script);
+    } else {
+      proceedBooking(); // Proceed if Razorpay is already loaded
+    }
   };
+  
+  const proceedBooking = () => {
+    // First create a booking order
+    fetch('http://localhost:5000/booking/book', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        movieName, 
+        movieId,   
+        theaterName: selectedTheater?.split('-')[1] || '', 
+        theaterId: selectedTheater?.split('-')[0] || '',  
+        date: selectedDate, 
+        time: Object.values(selectedTimes).join(', '), 
+        seatNumbers: Array.from(selectedSeats),
+        totalAmount: totalCost, 
+        userId: localStorage.getItem('userId'), 
+        amount: totalCost * 100,  // Amount in paise
+        currency: 'INR'
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (!data || !data.orderId) {
+        console.error('Order creation failed:', data);
+        toast.error('Failed to create booking order.');
+        return;
+      }
+  
+      // Define Razorpay options
+      const options = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'Movie Booking',
+        description: 'Seat Booking',
+        order_id: data.orderId,
+        handler: function (response: any) {
+          // Payment was successful, now save the booking
+          fetch('/api/save-booking', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              movieName,
+              movieId,
+              theaterName: selectedTheater?.split('-')[1] || '',
+              theaterId: selectedTheater?.split('-')[0] || '',
+              date: selectedDate,
+              time: Object.values(selectedTimes).join(', '),
+              seatNumbers: Array.from(selectedSeats),
+              amount: totalCost,
+              paymentId: response.razorpay_payment_id // Capture payment ID
+            })
+          })
+          .then(response => response.json())
+          .then(() => {
+            router.push('/confirmation'); // Redirect to confirmation page
+          })
+          .catch(error => {
+            console.error('Failed to save booking:', error);
+            toast.error('Failed to save booking.');
+          });
+        },
+        prefill: {
+          name: '',  // Add user's prefill data
+          email: '', 
+          contact: ''
+        },
+        theme: {
+          color: '#F37254'
+        }
+      };
+  
+      // Initialize Razorpay checkout
+      const payment = new (window as any).Razorpay(options);
+      payment.open();
+    })
+    .catch(error => {
+      console.error('Failed to create Razorpay order:', error);
+      toast.error('Failed to create order.');
+    });
+  };
+  
+  
 
-  // Utility function to generate seat labels dynamically
   const generateSeatLayout = (seatNumbers: number[], rows: number): string[][] => {
     const seatLabels: string[] = [];
     let index = 0;
     
-    // Generate seat labels for each seat number
     for (let i = 0; i < seatNumbers.length; i++) {
       if (seatNumbers[i] === 1) {
-        const rowLabel = String.fromCharCode(65 + Math.floor(index / rows)); // Convert index to row label
-        const seatNumber = (index % rows) + 1; // Convert index to seat number
+        const rowLabel = String.fromCharCode(65 + Math.floor(index / rows));
+        const seatNumber = (index % rows) + 1;
         seatLabels.push(`${rowLabel}${seatNumber}`);
         index++;
       }
     }
     
-    // Create 2D array from seat labels
     const result: string[][] = [];
     for (let i = 0; i < rows; i++) {
       const rowLength = Math.min(seatLabels.length - i * rows, rows);
@@ -81,7 +271,6 @@ const SeatSelection: React.FC = () => {
     return result;
   };
 
-  // Calculate total cost
   const seatCost = 120;
   const totalCost = selectedSeats.size * seatCost;
 
@@ -95,7 +284,6 @@ const SeatSelection: React.FC = () => {
     });
   };
 
-  // Extract theater name and place
   const getTheaterDetails = (theater: string | null) => {
     if (!theater) return { name: '', place: '' };
     const parts = theater.split('-');
@@ -114,7 +302,7 @@ const SeatSelection: React.FC = () => {
 
       <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
         <Typography variant="h6">
-        Movie: {movieName}
+          Movie: {movieName}
         </Typography>
         <Typography variant="h6">
           Date: {formatDate(selectedDate)}
@@ -135,7 +323,7 @@ const SeatSelection: React.FC = () => {
             alignContent: "center",
             textAlign: "center",
             background: "grey",
-            borderRadius: "0 0 50px 50px", // Curve the bottom corners
+            borderRadius: "0 0 50px 50px",
             borderTopLeftRadius: 0,
             borderTopRightRadius: 0,
           }}
@@ -143,7 +331,6 @@ const SeatSelection: React.FC = () => {
           <Typography sx={{ color: "white", fontWeight: 700 }}>All eyes this way</Typography>
         </Box>
 
-        {/* Render seat rows */}
         <Box marginTop={3} width="100%" maxWidth="1200px" mx="auto">
           {seatLayout.map((row, rowIndex) => (
             <Grid container spacing={1} key={rowIndex} justifyContent="center" marginBottom={1}>
@@ -172,7 +359,6 @@ const SeatSelection: React.FC = () => {
           ))}
         </Box>
 
-        {/* Display selected seats and total cost */}
         <Box marginTop={2} textAlign={'center'}>
           <Typography variant="h6">
             Selected Seats: {Array.from(selectedSeats).join(', ')}
