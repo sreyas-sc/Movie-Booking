@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteUser, getAllUsers, getBookingsOfUser, login, signup, updateUser } from "../controllers/user-controller.js";
+import { deleteUser, getAllUsers, getBookingsOfUser, googleSignIn, login, signup, updateUser } from "../controllers/user-controller.js";
 
 const 
 userRouter = express.Router();
@@ -21,5 +21,8 @@ userRouter.post("/login", login);
 
 // To get the bookings of the user
 userRouter.get("/bookings/:id", getBookingsOfUser);
+
+userRouter.post("/google-signin",  googleSignIn);
+
 
 export default userRouter

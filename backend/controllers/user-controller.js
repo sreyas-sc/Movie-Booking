@@ -132,3 +132,33 @@ export const getBookingsOfUser = async (req, res, next) => {
 };
 
 
+export const googleSignIn = async (req, res, next) => {
+  console.log("Received Google Sign-In request");
+
+  const { email } = req.body;
+  console.log("Received email:", email);
+
+  if (!email || email.trim() === "") {
+    console.log("Email is missing or empty");
+    return res.status(422).json({ message: "Email is required" });
+  }
+
+  try {
+    console.log("Searching for user with email:", email);
+    // Check if a user with this email exists
+    const user = await Users.findOne({ email });
+
+    if (user) {
+      console.log("User found with ID:", user._id);
+      // User exists, return the user ID
+      return res.status(200).json({ userId: user._id });
+    } else {
+      console.log("User not found with email:", email);
+      // User does not exist
+      return res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error during Google Sign-In:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};

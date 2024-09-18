@@ -81,25 +81,6 @@ export const getAllMovies = async (req, res, next) => {
       return res.status(500).json({ message: "Request failed, no movies found" });
     }
   };
-  
-  
-
-// 
-
-
-// export const getMovieById = async (req, res, next) => {
-//     const id = req.params.id;
-//     let movie;
-//     try {
-//         movie = await Movie.findById(id);
-//     } catch (err) {
-//         return res.status(500).json({ message: "Failed to retrieve movie" });
-//     }
-//     if (!movie) {
-//         return res.status(404).json({ message: "Movie not found" });
-//     }
-//     return res.status(200).json({ movie });
-// }
 
 
 export const getMovieById = async (req, res) => {

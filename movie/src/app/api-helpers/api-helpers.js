@@ -286,3 +286,25 @@ export const getAllShows = async () => {
     console.log("Error: ", err.message);
   }
 };
+
+
+// sigin in with google- user
+export const googleSignIn = async (email) => {
+  console.log("google signin")
+  try {
+    // Make a POST request to the /google-signin endpoint with the email
+    const response = await axios.post('http://localhost:5000/user/google-signin', { email });
+
+    // Check the response status
+    if (response.status === 200) {
+      // User exists, return user ID
+      return response.data;
+    } else {
+      // Handle the case where the user is not found
+      throw new Error(response.data.message || 'User not found');
+    }
+  } catch (error) {
+    console.error('Error during Google Sign-In:', error.message);
+    throw error; // Propagate error for further handling
+  }
+};

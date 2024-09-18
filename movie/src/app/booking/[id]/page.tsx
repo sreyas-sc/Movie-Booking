@@ -1,8 +1,11 @@
-// 'use client'
+// 'use client';
 // import React, { Fragment, useEffect, useState } from 'react';
 // import { Box, TextField, Typography, Card, CardContent, Divider, Button } from '@mui/material';
 // import { useParams } from 'next/navigation';
 // import { getMovieDetails, getAllShows } from '@/app/api-helpers/api-helpers.js';
+// // import { useRouter } from 'next/router'; // Import useRouter
+// import { useRouter } from 'next/navigation'; // Correct import
+
 
 // interface Movie {
 //   releaseDate: string | number | Date;
@@ -37,6 +40,13 @@
 //   const [selectedTheater, setSelectedTheater] = useState<string | null>(null);
 //   const [selectedTimes, setSelectedTimes] = useState<{ [key: string]: string | null }>({});
 //   const { id } = useParams(); // Get movie ID from URL
+//   const [selectedTheaterName, setSelectedTheaterName] = useState<string | null>(null);
+//   const [selectedTheaterLocation, setSelectedTheaterLocation] = useState<string | null>(null);
+//   const [selectedTheaterSeatLayout, setSelectedTheaterSeatLayout] = useState<number[]>([]); // Assuming seatLayout is an array of numbers
+
+
+ 
+//   const router = useRouter(); // Initialize router
 
 //   useEffect(() => {
 //     // Fetch available shows on component mount
@@ -135,35 +145,41 @@
 //           <Typography padding={3} fontFamily="fantasy" variant='h4' textAlign={"center"}>
 //             Book tickets for the movie: {movie.title}
 //           </Typography>
-//           <Box display={'flex'} justifyContent={'center'}>
+//           <Box display={'flex'} justifyContent={'center'} alignItems={'flex-start'}>
 //             <Box
 //               display={'flex'}
 //               flexDirection={'column'}
-//               pt={3}
 //               width='50%'
 //               marginLeft={'50px'}
-//               marginRight={'auto'}>
-//               {/* The poster image of movie */}
+//               marginRight={'auto'}
+//             >
+//               {/* The poster image of the movie */}
 //               <img
-//                 width='40%'
-//                 height='70%'
+//                 width='60%'
+//                 height='auto'
 //                 src={movie.posterUrl}
 //                 alt={movie.title}
 //               />
-//               <Box width={"80%"} marginTop={3} padding={2}>
-//                 {/* Movie description */}
-//                 <Typography paddingTop={2}>
-//                   {movie.description}
-//                 </Typography>
-//                 {/* Movie Cast */}
-//                 <Typography paddingTop={1} fontWeight={'bold'}>
-//                   Cast:
-//                   {/* {movie.actors.map((actor) => actor + ", ")} */}
-//                 </Typography>
-//                 <Typography fontWeight={'bold'} mt={1}>
-//                   Release Date: {new Date(movie.releaseDate).toLocaleDateString()}
-//                 </Typography>
-//               </Box>
+//             </Box>
+//             <Box
+//               width='40%'
+//               marginLeft={3}
+//             >
+//               {/* Movie details card */}
+//               <Card variant="outlined">
+//                 <CardContent>
+//                   <Typography variant="h5" component="div">
+//                     {movie.title}
+//                   </Typography>
+//                   <Divider style={{ margin: '10px 0' }} />
+//                   <Typography variant="body2">
+//                     {movie.description}
+//                   </Typography>
+//                   <Typography variant="body2" fontWeight={'bold'} mt={2}>
+//                     Release Date: {new Date(movie.releaseDate).toLocaleDateString()}
+//                   </Typography>
+//                 </CardContent>
+//               </Card>
 //             </Box>
 //           </Box>
 
@@ -181,26 +197,43 @@
 //                   <Divider style={{ margin: '10px 0' }} />
 //                   <Box>
 //                     {shows.flatMap(show => show.dates).map(date => (
-//                       <Button
-//                         key={date}
-//                         variant={selectedDate === date && selectedTheater === theaterKey ? "contained" : "outlined"}
-//                         onClick={() => handleDateClick(date, theaterKey)}
-//                         style={{ marginRight: '10px', marginBottom: '10px' }}
-//                       >
-//                         {new Date(date).toLocaleDateString()}
-//                       </Button>
+//                   <Button
+//                   key={date}
+//                   variant={selectedDate === date && selectedTheater === theaterKey ? "contained" : "outlined"}
+//                   onClick={() => handleDateClick(date, theaterKey)}
+//                   sx={{
+//                     marginRight: '10px',
+//                     marginBottom: '10px',
+//                     color: selectedDate === date && selectedTheater === theaterKey ? 'white' : 'rgba(248, 68, 100)',
+//                     borderColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'rgba(248, 68, 100)',
+//                     backgroundColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'transparent',
+//                     '&:hover': {
+//                       backgroundColor: selectedDate === date && selectedTheater === theaterKey ? 'darkred' : 'rgba(248, 68, 100, 0.1)',
+//                       borderColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'rgba(248, 68, 100)',
+//                     },
+//                   }}
+//                 >
+//                   {new Date(date).toLocaleDateString()}
+//                 </Button>              
 //                     ))}
 //                   </Box>
 //                   <Box>
 //                     {shows.flatMap(show => show.times).map(time => (
-//                       <Button
-//                         key={time}
-//                         variant={selectedTimes[theaterKey] === time ? "contained" : "outlined"}
-//                         onClick={() => handleTimeClick(time, theaterKey)}
-//                         style={{ marginRight: '10px', marginBottom: '10px' }}
-//                       >
-//                         {time}
-//                       </Button>
+//                      <Button
+//                      key={time}
+//                      variant={selectedTimes[theaterKey] === time ? "contained" : "outlined"}
+//                      onClick={() => handleTimeClick(time, theaterKey)}
+//                      style={{
+//                        marginRight: '10px',
+//                        marginBottom: '10px',
+//                        borderColor: selectedTimes[theaterKey] === time ? 'rgba(248, 68, 100)' : undefined,
+//                        backgroundColor: selectedTimes[theaterKey] === time ? 'rgba(248, 68, 100)' : undefined,
+//                        color: selectedTimes[theaterKey] === time ? 'white' : undefined, // Ensure text is visible on red background
+//                      }}
+//                    >
+//                      {time}
+//                    </Button>
+                   
 //                     ))}
 //                   </Box>
 //                 </CardContent>
@@ -213,9 +246,48 @@
 //             <Box padding={3}>
 //               <Typography variant="h6">Selected Date: {new Date(selectedDate).toLocaleDateString()}</Typography>
 //               <Typography variant="h6">Selected Time: {selectedTimes[selectedTheater]}</Typography>
-//               <Button variant="contained" color="primary">
-//                 Proceed to Book
-//               </Button>
+//               <Button
+//                 variant="contained"
+//                 sx={{
+//                   backgroundColor: "rgba(248, 68, 100)",
+//                   color: 'white',
+//                   '&:hover': {
+//                     backgroundColor: "rgba(248, 79, 90)",
+//                   },
+//                   marginTop: '20px',
+//                 }}
+//                 onClick={() => {
+//                   if (!selectedDate) {
+//                     console.error('Please select a date.');
+//                     return;
+//                   }
+                  
+//                   if (!selectedTimes[selectedTheater]) {
+//                     console.error('Please select a time.');
+//                     return;
+//                   }
+
+//                 // router.push({
+//                 //   pathname: 'booking/[id]/seat-selection',
+//                 //   query: {
+//                 //     movieTitle: movie?.title,
+//                 //     theaterName: selectedTheaterName,
+//                 //     location: selectedTheaterLocation,
+//                 //     date: selectedDate,
+//                 //     time: selectedTimes[selectedTheater],
+//                 //     seatLayout: JSON.stringify(selectedTheaterSeatLayout), // Convert seat layout to JSON string
+//                 //     ticketPrice: 120,
+//                 //   }
+//                 // });
+//                 router.push(
+//                   `/booking/${id}/seat-selection?movieTitle=${encodeURIComponent(movie?.title || '')}&theaterName=${encodeURIComponent(selectedTheaterName || '')}&location=${encodeURIComponent(selectedTheaterLocation || '')}&date=${encodeURIComponent(selectedDate || '')}&time=${encodeURIComponent(selectedTimes[selectedTheater] || '')}&seatLayout=${encodeURIComponent(JSON.stringify(selectedTheaterSeatLayout))}&ticketPrice=120`
+//                 );                
+//               }}
+//             >
+//               Proceed to Book
+//             </Button>
+
+
 //             </Box>
 //           )}
 //         </Fragment>
@@ -232,6 +304,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { Box, TextField, Typography, Card, CardContent, Divider, Button } from '@mui/material';
 import { useParams } from 'next/navigation';
 import { getMovieDetails, getAllShows } from '@/app/api-helpers/api-helpers.js';
+import { useRouter } from 'next/navigation'; // Correct import
 
 interface Movie {
   releaseDate: string | number | Date;
@@ -251,7 +324,7 @@ interface Show {
     _id: string;
     name: string;
     location: string;
-    seatLayout: number[];
+    seatLayout: number[]; // Assuming seatLayout is an array of numbers
     showtimes: string[];
   };
   dates: string[];
@@ -266,6 +339,11 @@ const Booking: React.FC = () => {
   const [selectedTheater, setSelectedTheater] = useState<string | null>(null);
   const [selectedTimes, setSelectedTimes] = useState<{ [key: string]: string | null }>({});
   const { id } = useParams(); // Get movie ID from URL
+  const [selectedTheaterName, setSelectedTheaterName] = useState<string | null>(null);
+  const [selectedTheaterLocation, setSelectedTheaterLocation] = useState<string | null>(null);
+  const [selectedTheaterSeatLayout, setSelectedTheaterSeatLayout] = useState<number[]>([]); // Assuming seatLayout is an array of numbers
+
+  const router = useRouter(); // Initialize router
 
   useEffect(() => {
     // Fetch available shows on component mount
@@ -347,6 +425,12 @@ const Booking: React.FC = () => {
       setSelectedTheater(theaterKey);
       setSelectedTimes(prev => ({ ...prev, [theaterKey]: null })); // Clear previous selected time for the theater
       console.log('Available Times:', times);
+
+      // Update theater details
+      const theater = selectedShows[0].theaterId; // Assuming all shows are in the same theater
+      setSelectedTheaterName(theater.name);
+      setSelectedTheaterLocation(theater.location);
+      setSelectedTheaterSeatLayout(theater.seatLayout);
     } else {
       console.error('No shows found for the selected date:', date);
     }
@@ -416,43 +500,46 @@ const Booking: React.FC = () => {
                   <Divider style={{ margin: '10px 0' }} />
                   <Box>
                     {shows.flatMap(show => show.dates).map(date => (
-                  <Button
-                  key={date}
-                  variant={selectedDate === date && selectedTheater === theaterKey ? "contained" : "outlined"}
-                  onClick={() => handleDateClick(date, theaterKey)}
-                  sx={{
-                    marginRight: '10px',
-                    marginBottom: '10px',
-                    color: selectedDate === date && selectedTheater === theaterKey ? 'white' : 'rgba(248, 68, 100)',
-                    borderColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'rgba(248, 68, 100)',
-                    backgroundColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: selectedDate === date && selectedTheater === theaterKey ? 'darkred' : 'rgba(248, 68, 100, 0.1)',
-                      borderColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'rgba(248, 68, 100)',
-                    },
-                  }}
-                >
-                  {new Date(date).toLocaleDateString()}
-                </Button>              
+                      <Button
+                        key={date}
+                        variant={selectedDate === date && selectedTheater === theaterKey ? "contained" : "outlined"}
+                        onClick={() => handleDateClick(date, theaterKey)}
+                        sx={{
+                          marginRight: '10px',
+                          marginBottom: '10px',
+                          color: selectedDate === date && selectedTheater === theaterKey ? 'white' : 'rgba(248, 68, 100)',
+                          borderColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'rgba(248, 68, 100)',
+                          backgroundColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'transparent',
+                          '&:hover': {
+                            backgroundColor: selectedDate === date && selectedTheater === theaterKey ? 'darkred' : 'rgba(248, 68, 100, 0.1)',
+                            borderColor: selectedDate === date && selectedTheater === theaterKey ? 'rgba(248, 68, 100)' : 'rgba(248, 68, 100)',
+                          },
+                        }}
+                      >
+                        {new Date(date).toLocaleDateString()}
+                      </Button>
                     ))}
                   </Box>
                   <Box>
                     {shows.flatMap(show => show.times).map(time => (
-                     <Button
-                     key={time}
-                     variant={selectedTimes[theaterKey] === time ? "contained" : "outlined"}
-                     onClick={() => handleTimeClick(time, theaterKey)}
-                     style={{
-                       marginRight: '10px',
-                       marginBottom: '10px',
-                       borderColor: selectedTimes[theaterKey] === time ? 'rgba(248, 68, 100)' : undefined,
-                       backgroundColor: selectedTimes[theaterKey] === time ? 'rgba(248, 68, 100)' : undefined,
-                       color: selectedTimes[theaterKey] === time ? 'white' : undefined, // Ensure text is visible on red background
-                     }}
-                   >
-                     {time}
-                   </Button>
-                   
+                      <Button
+                        key={time}
+                        variant={selectedTimes[theaterKey] === time ? "contained" : "outlined"}
+                        onClick={() => handleTimeClick(time, theaterKey)}
+                        sx={{
+                          marginRight: '10px',
+                          marginBottom: '10px',
+                          color: selectedTimes[theaterKey] === time ? 'white' : 'rgba(248, 68, 100)',
+                          borderColor: selectedTimes[theaterKey] === time ? 'rgba(248, 68, 100)' : 'rgba(248, 68, 100)',
+                          backgroundColor: selectedTimes[theaterKey] === time ? 'rgba(248, 68, 100)' : 'transparent',
+                          '&:hover': {
+                            backgroundColor: selectedTimes[theaterKey] === time ? 'darkred' : 'rgba(248, 68, 100, 0.1)',
+                            borderColor: selectedTimes[theaterKey] === time ? 'rgba(248, 68, 100)' : 'rgba(248, 68, 100)',
+                          },
+                        }}
+                      >
+                        {time}
+                      </Button>
                     ))}
                   </Box>
                 </CardContent>
@@ -460,30 +547,41 @@ const Booking: React.FC = () => {
             ))}
           </Box>
 
-          {/* Times and Booking */}
-          {selectedDate && selectedTheater && selectedTimes[selectedTheater] && (
-            <Box padding={3}>
-              <Typography variant="h6">Selected Date: {new Date(selectedDate).toLocaleDateString()}</Typography>
-              <Typography variant="h6">Selected Time: {selectedTimes[selectedTheater]}</Typography>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "rgba(248, 68, 100)",
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: "rgba(248, 79, 90)",
-                  },
-                  marginTop: '20px', // Optional: adds space above the button
-                }}
-              >
-                Proceed to Book
-              </Button>
+          {/* Proceed to Book Button */}
+          <Box display={'flex'} justifyContent={'center'} padding={2}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                console.log('Selected Date:', selectedDate);
+                console.log('Selected Theater:', selectedTheater);
+                console.log('Selected Times:', selectedTimes);
 
-            </Box>
-          )}
+                const movieId = Array.isArray(id) ? id[0] : id;
+
+                // Save seat layout and selected details to localStorage
+                if (selectedTheater) {
+                  localStorage.setItem('selectedMovie',  movie.title);
+                  localStorage.setItem('selectedMovieId', movieId || ''); // Save movie ID
+                  localStorage.setItem('selectedDate', selectedDate || '');
+                  localStorage.setItem('selectedTheater', selectedTheater);
+                  localStorage.setItem('selectedTimes', JSON.stringify(selectedTimes));
+                  localStorage.setItem('seatLayout', JSON.stringify(selectedTheaterSeatLayout));
+
+                  router.push('/components/seat-selection'); // Navigate to seat selection page
+                } else {
+                  console.error('No theater selected');
+                }
+              }}
+              sx={{ backgroundColor: 'rgba(248, 68, 100)' }}
+            >
+              Proceed to Book
+            </Button>
+          </Box>
         </Fragment>
       ) : (
-        <Typography>Loading movie details...</Typography>
+        <Typography variant="h6" color="text.secondary" textAlign={'center'}>
+          Loading movie details...
+        </Typography>
       )}
     </div>
   );
